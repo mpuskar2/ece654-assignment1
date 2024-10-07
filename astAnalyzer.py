@@ -19,13 +19,11 @@ class ASTAnalyzer(ast.NodeVisitor):
         
     # Check length of identifiers
     def visit_FunctionDef(self, node):
-        print(node.name)
         if len(node.name) == 13:
             self.identifier_length_valid = False
         self.generic_visit(node)
 
     def visit_Name(self, node):
-        print(node.id)
         if len(node.id) == 13:
             self.identifier_length_valid = False
         self.generic_visit(node)
@@ -52,7 +50,6 @@ class ASTAnalyzer(ast.NodeVisitor):
 
 # Create AST from code
 parsed_ast = ast.parse(code)
-# print(ast.dump(parsed_ast, indent=4))
 # Visit the generated AST
 analyzer = ASTAnalyzer()
 analyzer.visit(parsed_ast)
