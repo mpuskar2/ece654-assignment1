@@ -28,6 +28,12 @@ class ASTAnalyzer(ast.NodeVisitor):
             self.identifier_length_valid = False
         self.generic_visit(node)
 
+    def visit_Global(self, node):
+        for names in node.names:
+            if len(names) == 13:
+                self.identifier_length_valid = False
+        self.generic_visit(node)
+
 
     # Check control structure nesting
     def visit_If(self, node):
@@ -43,6 +49,12 @@ class ASTAnalyzer(ast.NodeVisitor):
         self.current_nesting -= 1
 
     def visit_While(self, node):
+        self.current_nesting += 1
+        self.max_nesting = max(self.max_nesting, self.current_nesting)
+        self.generic_visit(node)
+        self.current_nesting -= 1
+
+    def visit_Try(self, node):
         self.current_nesting += 1
         self.max_nesting = max(self.max_nesting, self.current_nesting)
         self.generic_visit(node)
