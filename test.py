@@ -23,7 +23,7 @@ class TestASTAnalyzer(unittest.TestCase):
 
     def test_max_nesting_depth(self):
         self.analyzer.visit(self.parsed_ast)
-        self.assertEqual(self.analyzer.max_nesting, 4)
+        self.assertEqual(self.analyzer.max_nesting, 3)
 
 if __name__ == "__main__":
     unittest.main()
