@@ -118,5 +118,28 @@ def other_function(xxxxxxxxxxxxx):
         self.assertEqual(max_nesting, 5) # if, for, while, for, try
         self.assertFalse(nesting_valid)
     
+    # Expected: True, True
+    def test_6(self):
+        code = """
+def other_function(x):
+    global qwerty
+    if x > 0:
+        for i in range(x):
+            for k in range(10):
+                try:
+                    print(i)
+                except Exception:
+                    print("hello")
+    else:
+        print("hi")
+    if (1 == 1):
+        for k in range(10):
+            print("yes")
+"""
+        identifier_length_valid, max_nesting, nesting_valid = self.get_results(code)
+        self.assertTrue(identifier_length_valid)
+        self.assertEqual(max_nesting, 4) # if, for, for, try
+        self.assertTrue(nesting_valid)
+
 if __name__ == "__main__":
     unittest.main()
