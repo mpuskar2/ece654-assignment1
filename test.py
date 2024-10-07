@@ -2,7 +2,17 @@ import ast
 import unittest
 import astAnalyzer
 
-code = """
+class TestASTAnalyzer(unittest.TestCase):
+    # Call this in every test to get the analyzer's results
+    def get_results(self, code):
+        self.analyzer = astAnalyzer.ASTAnalyzer()
+        parsed_ast = ast.parse(code)
+        self.analyzer.visit(parsed_ast)
+        return self.analyzer.identifier_length_valid, self.analyzer.max_nesting
+
+    # Expected: True, True
+    def test_1(self):
+        code = """
 def atest_function(x):
     if x > 0:
         for i in range(x):
@@ -11,19 +21,30 @@ def atest_function(x):
     else:
         print("test")
 """
+        identifier_length_valid, max_nesting = self.get_results(code)
+        self.assertTrue(identifier_length_valid) # test_function
+        self.assertEqual(max_nesting, 3) # if, for, while
 
-class TestASTAnalyzer(unittest.TestCase):
-    def setUp(self):
-        self.analyzer = astAnalyzer.ASTAnalyzer()
-        self.parsed_ast = ast.parse(code)
+    # Expected: False, True
+    def test_2(self):
+        code = """
+def other_function(x):
+    global qwertyuiopasd
+    asd
+    if x > 0:
+        for i in range(x):
+            while i < 10:
+                try:
+                    print(i)
+                except Exception:
+                    print("hello")
+    else:
+        print("hi")
+"""
+        identifier_length_valid, max_nesting = self.get_results(code)
+        self.assertFalse(identifier_length_valid) # qwertyuiopasd
+        self.assertEqual(max_nesting, 4) # if, for, while, try
 
-    def test_identifier_length_13(self):
-        self.analyzer.visit(self.parsed_ast)
-        self.assertTrue(self.analyzer.identifier_length_valid)
-
-    def test_max_nesting_depth(self):
-        self.analyzer.visit(self.parsed_ast)
-        self.assertEqual(self.analyzer.max_nesting, 3)
-
+    
 if __name__ == "__main__":
     unittest.main()
